@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>What’s Your Soul-Curse?</title>
+  <style>
+    body {
+      font-family: 'Georgia', serif;
+      background: #1b1b1b;
+      color: #f0e6d2;
+      padding: 20px;
+      max-width: 700px;
+      margin: auto;
+    }
+    h1, h2 {
+      text-align: center;
+    }
+    .question {
+      margin-bottom: 40px;
+    }
+    button {
+      display: block;
+      margin: 10px 0;
+      background: #333;
+      color: #f0e6d2;
+      border: 1px solid #888;
+      padding: 10px 16px;
+      width: 100%;
+      text-align: left;
+      cursor: pointer;
+      font-size: 16px;
+    }
+    button:hover {
+      background: #555;
+    }
+    .result {
+      background: #2a2a2a;
+      padding: 20px;
+      margin-top: 30px;
+      border: 1px solid #666;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>🕯️ What’s Your Soul-Curse? 🕯️</h1>
+  <div id="quiz"></div>
+  <div id="result" class="result" style="display:none;"></div>
+
+  <script>
+    const questions = [
+      {
+        text: "1. When you wake up in the morning, what’s your first thought?",
+        options: {
+          A: "I need five more alarms and a new life.",
+          B: "So much to do, so little motivation.",
+          C: "What did that dream mean?",
+          D: "I hope today finally feels different.",
+          E: "Let’s go. I’m unstoppable. (Then crash at 2pm.)"
+        }
+      },
+      {
+        text: "2. Pick a deadly sin to get brunch with:",
+        options: {
+          A: "Pride",
+          B: "Envy",
+          C: "Sloth",
+          D: "Lust",
+          E: "Wrath"
+        }
+      },
+      {
+        text: "3. Your relationships often feel like:",
+        options: {
+          A: "A warm bath that slowly turns cold.",
+          B: "A rollercoaster with no seatbelt.",
+          C: "A puzzle you never got all the pieces for.",
+          D: "A sparkler—blazing and gone.",
+          E: "A safe space you accidentally sabotage."
+        }
+      },
+      {
+        text: "4. When you’re alone with your thoughts, what happens?",
+        options: {
+          A: "I analyze everything I’ve ever said.",
+          B: "I imagine 10 alternate realities where I made better choices.",
+          C: "I numb out until it passes.",
+          D: "I spiral into a creative rabbit hole.",
+          E: "I rehearse arguments I’ll never have."
+        }
+      },
+      {
+        text: "5. What kind of chaos do you accidentally cause?",
+        options: {
+          A: "Emotional whiplash.",
+          B: "Ghosting with good intentions.",
+          C: "Getting everyone too deep in their feelings.",
+          D: "Inspiring people... then disappearing.",
+          E: "Saying the thing no one else would."
+        }
+      },
+      {
+        text: "6. What makes you *dangerously* charming?",
+        options: {
+          A: "I seem like I know what I want (even when I don’t).",
+          B: "I’m unpredictable in a hot way.",
+          C: "I connect instantly—people spill their guts.",
+          D: "I romanticize everyone and everything.",
+          E: "I’m brutally honest with a wink."
+        }
+      }
+    ];
+
+    const curses = {
+      A: {
+        name: "The Vanishing Flame",
+        score: 0,
+        description: `
+          You burn bright—intense, emotional, all-in—until you're not. 
+          You crave magic but resist routine. The thrill excites you, 
+          but consistency feels like a trap. You don't mean to disappear, 
+          but sometimes your soul demands new fire.`
+      },
+      B: {
+        name: "The Wild Card Soul",
+        score: 0,
+        description: `
+          You are chaos in lipstick. Unpredictable, charming, magnetic—
+          but rarely still. You fear stagnation more than failure, 
+          and while people are drawn to your energy, few can keep up.`
+      },
+      C: {
+        name: "The Mirror Heart",
+        score: 0,
+        description: `
+          You absorb the emotions of everyone around you, often confusing 
+          others' needs for your own. Deeply empathetic but easily drained, 
+          your curse is knowing too much, too fast.`
+      },
+      D: {
+        name: "The Dreamer’s Curse",
+        score: 0,
+        description: `
+          You romanticize life until reality can’t keep up. 
+          You fall in love with moments, people, and ideas—only to grow 
+          disenchanted when they become real. Your soul lives 3 inches off the ground.`
+      },
+      E: {
+        name: "The Blunt Blade",
+        score: 0,
+        description: `
+          You speak truth, even when it burns. You're bold, raw, and 
+          allergic to hypocrisy. But your honesty can wound, and your challenge 
+          is learning when to speak—and when to let silence do the cutting.`
+      }
+    };
+
+    let current = 0;
+
+    function renderQuiz() {
+      const container = document.getElementById('quiz');
+      container.innerHTML = '';
+      if (current >= questions.length) {
+        showResult();
+        return;
+      }
+
+      const q = questions[current];
+      const div = document.createElement('div');
+      div.classList.add('question');
+      div.innerHTML = `<h2>${q.text}</h2>`;
+
+      // Randomize answer order without affecting their weights
+      const entries = Object.entries(q.options);
+      const shuffled = entries.sort(() => Math.random() - 0.5);
+
+      shuffled.forEach(([key, value]) => {
+        const btn = document.createElement('button');
+        btn.innerText = `${value}`;
+        btn.onclick = () => {
+          curses[key].score++;
+          current++;
+          renderQuiz();
+        };
+        div.appendChild(btn);
+      });
+
+      container.appendChild(div);
+    }
+
+    function showResult() {
+      const container = document.getElementById('quiz');
+      container.style.display = 'none';
+      const resultDiv = document.getElementById('result');
+
+      const topCurse = Object.values(curses).reduce((a, b) =>
+        a.score > b.score ? a : b
+      );
+
+      resultDiv.innerHTML = `
+        <h2>🕷️ Your Soul-Curse: <em>${topCurse.name}</em> 🕷️</h2>
+        <p>${topCurse.description}</p>
+      `;
+      resultDiv.style.display = 'block';
+    }
+
+    renderQuiz();
+  </script>
+
+</body>
+</html>
